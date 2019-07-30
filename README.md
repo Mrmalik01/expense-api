@@ -9,4 +9,4 @@ python app.py
 
 ## Description
 
-This API allow the user to create and manage their expense list.
+This API allows user to create and manage their expense list.
