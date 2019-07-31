@@ -47,10 +47,24 @@ class User(Resource):
             user.set(*data)
         else:
             user = UserModel(*data)
-    
+        try:
+            user.save_to_db()
+            return user.json()
+        except:
+            return {"message":"Error while entering information inside database"}
+
 
             
 
     # DELETE /user/<username>
     def delete(username):
-        pass
+        user = UserModel.findByUserName(username)
+        if user:
+            try:
+                user.delete_from_db()
+            except:
+                return {"message":"Error while deleting user from the database"}
+        else:
+            return {"message":"User does not exist"}
+
+
