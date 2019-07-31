@@ -8,20 +8,18 @@ class UserRegistry(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument("full_name", type=str, help=help_msg)
     parser.add_argument("password", type=str, help=help_msg)
-    parser.add_argument("email_address", type=str, help=help_msg)
-    parser.add_argument("user_name", type=str, help=help_msg)
-    parser.add_argument("phone_number", type=str, help=help_msg)
+    parser.add_argument("username", type=str, help=help_msg)
+
     # POST /register - for creating new user in the database
-    @jet_required()
-    def post():
-        data = parser.parse()
-        user_name = data['user_name']
-        user = UserModel.findByUserName(user_name)
+    def post(self):
+        data = UserRegistry.parser.parse_args()
+        username = data['username']
+        user = UserModel.findByUserName(username)
         if user:
             return {"message":"This username is taken"}, 400
-        user = UserModel(*data)
+        user = UserModel(**data)
         user.save_to_db()
-        return user
+        return {"message":"User account created"}
 
 
 class User(Resource):
@@ -30,38 +28,22 @@ class User(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument("full_name", type=str, help=help_msg)
     parser.add_argument("password", type=str, help=help_msg)
-    parser.add_argument("email_address", type=str, help=help_msg)
-    parser.add_argument("phone_number", type=str, help=help_msg)
+
     # GET /user/<username>
-    def get(username):
+    def get(self, username):
         user = UserModel.findByUserName(username)
         if user:
             return user.json()
         return {"message":"User does not exist in the system"}
 
-    # SET /user/<username>
-    def set(username):
-        user = UserModel.findByUserName(username)
-        if user:
-            data = parser.parse()
-            user.set(*data)
-        else:
-            user = UserModel(*data)
-        try:
-            user.save_to_db()
-            return user.json()
-        except:
-            return {"message":"Error while entering information inside database"}
-
-
-            
-
+    @jwt_required()
     # DELETE /user/<username>
-    def delete(username):
+    def delete(self,username):
         user = UserModel.findByUserName(username)
         if user:
             try:
                 user.delete_from_db()
+                return {"message":"User deleted"}
             except:
                 return {"message":"Error while deleting user from the database"}
         else:

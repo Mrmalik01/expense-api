@@ -1,7 +1,7 @@
 from flask_restful import Resource
 
 class AccountRegistry(Resource):
-
+    
     # POST /account-register/<username>
     def post(username):
         pass

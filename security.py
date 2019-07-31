@@ -1,4 +1,4 @@
-from werkzueg.security import safe_str_cmp
+from werkzeug.security import safe_str_cmp
 from models.user import UserModel
 
 def authenticate(user_name, password):
@@ -7,7 +7,7 @@ def authenticate(user_name, password):
         return user
 
 def identity(payload):
-    user_id = payload[user_id]
+    user_id = payload['identity']
     return UserModel.findById(user_id)
 
     
